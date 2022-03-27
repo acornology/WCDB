@@ -23,7 +23,7 @@ Pod::Spec.new do |wcdb|
   wcdb.source_files  = "objc/WCDB/WCDB.h", "objc/WCDB/**/*.{h,m,hpp,cpp,mm}"
   wcdb.frameworks = "CoreFoundation", "Security", "Foundation"
   wcdb.ios.frameworks = "UIKit"
-  wcdb.libraries = "z", "c++"
+  wcdb.libraries = "z", "c++", "sqlite3"
   wcdb.requires_arc = true
   wcdb.pod_target_xcconfig = {
     "GCC_PREPROCESSOR_DEFINITIONS" => "WCDB_BUILTIN_COLUMN_CODING SQLITE_HAS_CODEC",
@@ -35,6 +35,6 @@ Pod::Spec.new do |wcdb|
     "OTHER_CPLUSPLUSFLAGS" => "-fvisibility-inlines-hidden",
   }
   wcdb.header_dir = "WCDB"
-  wcdb.dependency 'WCDBOptimizedSQLCipher', '~> 1.2.0'
-  wcdb.dependency 'SQLiteRepairKit', '~> 1.2.0'
+  # wcdb.dependency 'WCDBOptimizedSQLCipher', '~> 1.2.0'
+  # wcdb.dependency 'SQLiteRepairKit', '~> 1.2.0'
 end

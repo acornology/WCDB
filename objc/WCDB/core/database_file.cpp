@@ -70,7 +70,7 @@ const std::array<std::string, 5> &Database::subfixs()
 {
     static const std::array<std::string, 5> s_subfixs = {
         "", //db file
-        "-wal", "-journal", "-shm", Handle::backupSuffix,
+        "-wal", "-journal", "-shm",
     };
     return s_subfixs;
 }

@@ -45,9 +45,7 @@
 #import <WCDB/WCTInterface+Core.h>
 
 #import <WCDB/WCTDatabase+Database.h>
-#import <WCDB/WCTDatabase+FTS.h>
 #import <WCDB/WCTDatabase+File.h>
-#import <WCDB/WCTDatabase+RepairKit.h>
 
 #import <WCDB/WCTDatabase.h>
 #import <WCDB/WCTStatement.h>
@@ -73,9 +71,6 @@
 #import <WCDB/WCTError.h>
 #import <WCDB/WCTStatistics.h>
 #import <WCDB/WCTTransaction+Statistics.h>
-
-#import <WCDB/WCTTokenizer+Apple.h>
-#import <WCDB/WCTTokenizer+WCDB.h>
 
 #ifndef WCDB_OMIT_DEPRECATED
 

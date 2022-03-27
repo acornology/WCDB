@@ -20,21 +20,14 @@
 
 #include <WCDB/File.hpp>
 #include <WCDB/Path.hpp>
-#ifndef COCOAPODS
-#include <WCDB/SQLiteRepairKit.h>
-#else
-#include <sqliterk/SQLiteRepairKit.h>
-#endif
 #include <WCDB/handle.hpp>
 #include <WCDB/handle_statement.hpp>
 #include <WCDB/macro.hpp>
 #include <WCDB/statement.hpp>
 #include <WCDB/statement_transaction.hpp>
-#include <sqlcipher/sqlite3.h>
+#include <sqlite3.h>
 
 namespace WCDB {
-
-const std::string Handle::backupSuffix("-backup");
 
 static void GlobalLog(void *userInfo, int code, const char *message)
 {
@@ -250,27 +243,6 @@ long long Handle::getLastInsertedRowID()
     return sqlite3_last_insert_rowid((sqlite3 *) m_handle);
 }
 
-bool Handle::setCipherKey(const void *data, int size)
-{
-#ifdef SQLITE_HAS_CODEC
-    int rc = sqlite3_key((sqlite3 *) m_handle, data, size);
-    if (rc == SQLITE_OK) {
-        m_error.reset();
-        return true;
-    }
-    Error::ReportSQLite(m_tag, path, Error::HandleOperation::SetCipherKey, rc,
-                        sqlite3_extended_errcode((sqlite3 *) m_handle),
-                        sqlite3_errmsg((sqlite3 *) m_handle), &m_error);
-    return false;
-#else  //SQLITE_HAS_CODEC
-    Error::ReportSQLite(m_tag, path, Error::HandleOperation::SetCipherKey,
-                        SQLITE_MISUSE, SQLITE_MISUSE,
-                        "[sqlite3_key] is not supported for current config",
-                        &m_error);
-    return false;
-#endif //SQLITE_HAS_CODEC
-}
-
 void Handle::registerCommittedHook(const CommittedHook &onCommitted, void *info)
 {
     m_committedHookInfo.onCommitted = onCommitted;
@@ -289,70 +261,6 @@ void Handle::registerCommittedHook(const CommittedHook &onCommitted, void *info)
     } else {
         sqlite3_wal_hook((sqlite3 *) m_handle, nullptr, nullptr);
     }
-}
-
-std::string Handle::getBackupPath() const
-{
-    return path + backupSuffix;
-}
-
-bool Handle::backup(const void *key, const unsigned int &length)
-{
-    std::string backupPath = getBackupPath();
-    int rc = sqliterk_save_master((sqlite3 *) m_handle, backupPath.c_str(), key,
-                                  length);
-    if (rc == SQLITERK_OK) {
-        m_error.reset();
-        return true;
-    }
-    Error::ReportRepair(path, Error::RepairOperation::SaveMaster, rc, &m_error);
-    return false;
-}
-
-bool Handle::recoverFromPath(const std::string &corruptedDBPath,
-                             const int pageSize,
-                             const void *backupKey,
-                             const unsigned int &backupKeyLength,
-                             const void *databaseKey,
-                             const unsigned int &databaseKeyLength)
-{
-    std::string backupPath = corruptedDBPath + backupSuffix;
-    sqliterk_master_info *info;
-    unsigned char kdfSalt[16];
-    memset(kdfSalt, 0, 16);
-    int rc = sqliterk_load_master(backupPath.c_str(), backupKey,
-                                  backupKeyLength, nullptr, 0, &info, kdfSalt);
-    if (rc != SQLITERK_OK) {
-        Error::ReportRepair(
-            backupPath, WCDB::Error::RepairOperation::LoadMaster, rc, &m_error);
-        return false;
-    }
-
-    sqliterk_cipher_conf conf;
-    memset(&conf, 0, sizeof(sqliterk_cipher_conf));
-    conf.key = databaseKey;
-    conf.key_len = databaseKeyLength;
-    conf.page_size = pageSize;
-    conf.kdf_salt = kdfSalt;
-    conf.use_hmac = true;
-
-    sqliterk *rk;
-    rc = sqliterk_open(corruptedDBPath.c_str(), &conf, &rk);
-    if (rc != SQLITERK_OK) {
-        Error::ReportRepair(corruptedDBPath,
-                            WCDB::Error::RepairOperation::Repair, rc, &m_error);
-        return false;
-    }
-
-    rc = sqliterk_output(rk, (sqlite3 *) m_handle, info,
-                         SQLITERK_OUTPUT_ALL_TABLES);
-    if (rc != SQLITERK_OK) {
-        Error::ReportRepair(corruptedDBPath,
-                            WCDB::Error::RepairOperation::Repair, rc, &m_error);
-        return false;
-    }
-    m_error.reset();
-    return true;
 }
 
 void Handle::setTag(Tag tag)

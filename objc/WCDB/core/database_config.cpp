@@ -19,7 +19,6 @@
  */
 
 #include <WCDB/database.hpp>
-#include <WCDB/fts_modules.hpp>
 #include <WCDB/handle_statement.hpp>
 #include <WCDB/macro.hpp>
 #include <WCDB/timed_queue.hpp>
@@ -248,35 +247,6 @@ void Database::setConfig(const std::string &name, const Config &config)
     m_pool->setConfig(name, config);
 }
 
-void Database::setCipher(const void *key, int keySize, int pageSize)
-{
-    std::shared_ptr<std::vector<unsigned char>> keys(
-        new std::vector<unsigned char>(keySize));
-    memcpy(keys->data(), key, keySize);
-    m_pool->setConfig(Database::defaultCipherConfigName,
-                      [keys, pageSize](std::shared_ptr<Handle> &handle,
-                                       Error &error) -> bool {
-
-                          //Set Cipher Key
-                          bool result = handle->setCipherKey(
-                              keys->data(), (int) keys->size());
-                          if (!result) {
-                              error = handle->getError();
-                              return false;
-                          }
-
-                          //Set Cipher Page Size
-                          if (!handle->exec(StatementPragma().pragma(
-                                  Pragma::CipherPageSize, pageSize))) {
-                              error = handle->getError();
-                              return false;
-                          }
-
-                          error.reset();
-                          return true;
-                      });
-}
-
 void Database::setPerformanceTrace(const PerformanceTrace &trace)
 {
     m_pool->setConfig(
@@ -316,44 +286,6 @@ void Database::setSynchronousFull(bool full)
                           Database::defaultConfigs.getConfigByName(
                               Database::defaultCheckpointConfigName));
     }
-}
-
-void Database::setTokenizes(const std::list<std::string> &tokenizeNames)
-{
-    m_pool->setConfig(
-        Database::defaultTokenizeConfigName,
-        [tokenizeNames](std::shared_ptr<Handle> &handle, Error &error) -> bool {
-            for (const std::string &tokenizeName : tokenizeNames) {
-                const void *address =
-                    FTS::Modules::SharedModules()->getAddress(tokenizeName);
-
-                if (!address) {
-                    Error::Abort("Tokenize name is not registered");
-                }
-
-                //Tokenize
-                {
-                    std::shared_ptr<StatementHandle> statementHandle =
-                        handle->prepare(StatementSelect::Fts3Tokenizer);
-                    if (!statementHandle) {
-                        error = handle->getError();
-                        return false;
-                    }
-                    statementHandle->bind<WCDB::ColumnType::Text>(
-                        tokenizeName.c_str(), 1);
-                    statementHandle->bind<WCDB::ColumnType::BLOB>(
-                        &address, sizeof(address), 2);
-                    statementHandle->step();
-                    if (!statementHandle->isOK()) {
-                        error = statementHandle->getError();
-                        return false;
-                    }
-                }
-            }
-
-            error.reset();
-            return true;
-        });
 }
 
 void Database::SetGlobalPerformanceTrace(const PerformanceTrace &globalTrace)

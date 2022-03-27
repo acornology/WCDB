@@ -19,7 +19,7 @@
  */
 
 #include <WCDB/handle_statement.hpp>
-#include <sqlcipher/sqlite3.h>
+#include <sqlite3.h>
 
 namespace WCDB {
 
