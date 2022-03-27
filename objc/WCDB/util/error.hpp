@@ -84,8 +84,7 @@ public:
         Exec = 4,
         Step = 5,
         Finalize = 6,
-        SetCipherKey = 7,
-        IsTableExists = 8,
+        IsTableExists = 7,
     };
     enum class InterfaceOperation : int {
         StatementHandle = 1,

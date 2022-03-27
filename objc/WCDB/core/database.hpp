@@ -71,9 +71,7 @@ public:
                    const Config &config,
                    Configs::Order order);
     void setConfig(const std::string &name, const Config &config);
-    void setCipher(const void *key, int keySize, int pageSize = 4096);
     void setSynchronousFull(bool full);
-    void setTokenizes(const std::list<std::string> &tokenizeNames);
     void setPerformanceTrace(const PerformanceTrace &trace);
     static void SetGlobalPerformanceTrace(const PerformanceTrace &globalTrace);
     static void SetGlobalSQLTrace(const SQLTrace &globalTrace);
@@ -102,16 +100,6 @@ public:
     bool rollback(Error &error) override;
     bool runEmbeddedTransaction(TransactionBlock transaction,
                                 Error &error) override;
-
-    //Repair Kit
-    bool backup(const void *key, const unsigned int &length, Error &error);
-    bool recoverFromPath(const std::string &corruptedDBPath,
-                         const int pageSize,
-                         const void *backupKey,
-                         const unsigned int &backupKeyLength,
-                         const void *databaseKey,
-                         const unsigned int &databaseKeyLength,
-                         Error &error);
 
 protected:
     static const std::array<std::string, 5> &subfixs();
