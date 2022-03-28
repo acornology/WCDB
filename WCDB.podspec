@@ -45,6 +45,9 @@ It can be a replacement for Core Data, SQLite & FMDB.
   s.libraries = 'sqlite3', 'c++'
   s.pod_target_xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => 'WCDB_BUILTIN_COLUMN_CODING',
-    'DEFINES_MODULE' => 'YES'
+    'DEFINES_MODULE' => 'YES',
+    'OTHER_CFLAGS' => '-Wall -Wextra -Werror -Wpedantic',
+    'OTHER_CPLUSPLUSFLAGS' => '$(OTHER_CFLAGS) -Wno-reorder-ctor -Wno-unused-parameter -Wno-unguarded-availability',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++0x'
   }
 end
