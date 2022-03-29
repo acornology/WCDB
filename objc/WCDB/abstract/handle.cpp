@@ -89,55 +89,76 @@ void Handle::close()
 
 void Handle::setupTrace()
 {
-    unsigned flag = 0;
-    if (m_sqlTrace) {
-        flag |= SQLITE_TRACE_STMT;
-    }
-    if (m_performanceTrace) {
-        flag |= SQLITE_TRACE_PROFILE;
-    }
-    if (flag > 0) {
-        if (__builtin_available(iOS 10.0, *)) {
-            sqlite3_trace_v2(
-                             (sqlite3 *) m_handle, flag,
-                             [](unsigned int flag, void *M, void *P, void *X) -> int {
-                                 Handle *handle = (Handle *) M;
-                                 sqlite3_stmt *stmt = (sqlite3_stmt *) P;
-                                 switch (flag) {
-                                     case SQLITE_TRACE_STMT: {
-                                         const char *sql = sqlite3_sql(stmt);
-                                         if (sql) {
-                                             handle->reportSQL(sql);
-                                         }
-                                     } break;
-                                     case SQLITE_TRACE_PROFILE: {
-                                         sqlite3_int64 *cost = (sqlite3_int64 *) X;
-                                         const char *sql = sqlite3_sql(stmt);
-                                         
-                                         //report last trace
-                                         if (!handle->shouldPerformanceAggregation()) {
-                                             handle->reportPerformance();
-                                         }
-                                         
-                                         if (sql) {
-                                             handle->addPerformanceTrace(sql, *cost);
-                                         }
-                                     } break;
-                                     default:
-                                         break;
-                                 }
-                                 
-                                 return SQLITE_OK;
-                             },
-                             this);
+    if (__builtin_available(iOS 10.0, *)) {
+        unsigned int flag = 0;
+        if (m_sqlTrace) {
+            flag |= SQLITE_TRACE_STMT;
+        }
+        if (m_performanceTrace) {
+            flag |= SQLITE_TRACE_PROFILE;
+        }
+        // sqlite3_trace_v2() always return SQLITE_OK, so ignore return value.
+        if (flag > 0) {
+            sqlite3_trace_v2((sqlite3 *) m_handle, flag, [](unsigned int type, void *context, void *p, void *x) -> int {
+                Handle *handle = (Handle *) context;
+                sqlite3_stmt *stmt = (sqlite3_stmt *) p;
+                switch (type) {
+                    case SQLITE_TRACE_STMT: {
+                        const char *sql = sqlite3_sql(stmt);
+                        if (sql) {
+                            handle->reportSQL(sql);
+                        }
+                    }
+                        break;
+                    case SQLITE_TRACE_PROFILE: {
+                        sqlite3_int64 *cost = (sqlite3_int64 *) x;
+                        const char *sql = sqlite3_sql(stmt);
+                        
+                        // report last trace
+                        if (!handle->shouldPerformanceAggregation()) {
+                            handle->reportPerformance();
+                        }
+                        
+                        if (sql) {
+                            handle->addPerformanceTrace(sql, *cost);
+                        }
+                    }
+                        break;
+                        
+                    default:
+                        break;
+                }
+                
+                return SQLITE_OK;
+            }, this);
         } else {
-            // Fallback on earlier versions
+            sqlite3_trace_v2((sqlite3 *) m_handle, 0, nullptr, nullptr);
         }
     } else {
-        if (__builtin_available(iOS 10.0, *)) {
-            sqlite3_trace_v2((sqlite3 *) m_handle, 0, nullptr, nullptr);
+        assert((!m_sqlTrace || !m_performanceTrace) && "Before iOS 10, SQLite3 can't trace statement and profile in the meantime.");
+        if (m_sqlTrace) {
+            sqlite3_trace((sqlite3 *) m_handle, [](void *context, const char *sql) {
+                Handle *handle = (Handle *) context;
+                if (sql) {
+                    handle->reportSQL(sql);
+                }
+            }, this);
+        } else if (m_performanceTrace) {
+            sqlite3_profile((sqlite3 *) m_handle, [](void *context, const char *sql, sqlite3_uint64 nanosecond) {
+                Handle *handle = (Handle *) context;
+                
+                // report last trace
+                if (!handle->shouldPerformanceAggregation()) {
+                    handle->reportPerformance();
+                }
+                
+                if (sql) {
+                    handle->addPerformanceTrace(sql, nanosecond);
+                }
+            }, this);
         } else {
-            // Fallback on earlier versions
+            sqlite3_trace((sqlite3 *) m_handle, nullptr, nullptr);
+            sqlite3_profile((sqlite3 *) m_handle, nullptr, nullptr);
         }
     }
 }
