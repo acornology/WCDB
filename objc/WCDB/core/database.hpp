@@ -33,7 +33,7 @@ namespace WCDB {
 
 class Transaction;
 
-class Database : public CoreBase {
+class Database final : public CoreBase {
 public:
     Database() = delete;
     Database(const std::string &path);

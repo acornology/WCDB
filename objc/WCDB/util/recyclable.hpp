@@ -33,16 +33,16 @@ public:
 
     Recyclable(const T &value, const Recyclable::OnRecycled &onRecycled)
         : m_value(value)
-        , m_onRecycled(onRecycled)
         , m_reference(new std::atomic<int>(0))
+        , m_onRecycled(onRecycled)
     {
         retain();
     }
 
     Recyclable(const Recyclable &other)
         : m_value(other.m_value)
-        , m_onRecycled(other.m_onRecycled)
         , m_reference(other.m_reference)
+        , m_onRecycled(other.m_onRecycled)
     {
         retain();
     }

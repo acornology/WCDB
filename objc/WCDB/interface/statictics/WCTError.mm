@@ -71,7 +71,7 @@
     [desc appendFormat:@"Code:%ld, ", (long) self.code];
     [desc appendFormat:@"Type:%s, ", WCDB::Error::GetTypeName((WCDB::Error::Type) _type)];
     __block BOOL quote = NO;
-    [self.userInfo enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *_Nonnull unused) {
+    [self.userInfo enumerateKeysAndObjectsUsingBlock:^(NSString *key, id obj, BOOL *_Nonnull /*unused*/) {
       if (quote) {
           [desc appendString:@", "];
       } else {

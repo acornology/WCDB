@@ -66,12 +66,12 @@ std::shared_ptr<Error::ReportMethod> Error::s_reportMethod;
 
 ThreadLocal<bool> Error::s_slient(false);
 
-Error::Error() : m_type(Error::Type::NotSet), m_code(0)
+Error::Error() : m_code(0), m_type(Error::Type::NotSet)
 {
 }
 
 Error::Error(Error::Type type, int code, const Error::Infos &infos)
-    : m_type(type), m_code(code), m_infos(infos)
+: m_code(code), m_type(type), m_infos(infos)
 {
 }
 

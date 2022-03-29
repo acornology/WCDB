@@ -29,7 +29,7 @@
 
 namespace WCDB {
 
-static void GlobalLog(void *userInfo, int code, const char *message)
+static void GlobalLog(void */*userInfo*/, int code, const char *message)
 {
     Error::ReportSQLiteGlobal(code, message ? message : "", nullptr);
 }
@@ -43,9 +43,9 @@ const auto UNUSED_UNIQUE_ID = []() {
 }();
 
 Handle::Handle(const std::string &p)
-    : m_handle(nullptr)
+    : path(p)
+    , m_handle(nullptr)
     , m_tag(InvalidTag)
-    , path(p)
     , m_performanceTrace(nullptr)
     , m_sqlTrace(nullptr)
     , m_cost(0)
@@ -97,40 +97,48 @@ void Handle::setupTrace()
         flag |= SQLITE_TRACE_PROFILE;
     }
     if (flag > 0) {
-        sqlite3_trace_v2(
-            (sqlite3 *) m_handle, flag,
-            [](unsigned int flag, void *M, void *P, void *X) -> int {
-                Handle *handle = (Handle *) M;
-                sqlite3_stmt *stmt = (sqlite3_stmt *) P;
-                switch (flag) {
-                    case SQLITE_TRACE_STMT: {
-                        const char *sql = sqlite3_sql(stmt);
-                        if (sql) {
-                            handle->reportSQL(sql);
-                        }
-                    } break;
-                    case SQLITE_TRACE_PROFILE: {
-                        sqlite3_int64 *cost = (sqlite3_int64 *) X;
-                        const char *sql = sqlite3_sql(stmt);
-
-                        //report last trace
-                        if (!handle->shouldPerformanceAggregation()) {
-                            handle->reportPerformance();
-                        }
-
-                        if (sql) {
-                            handle->addPerformanceTrace(sql, *cost);
-                        }
-                    } break;
-                    default:
-                        break;
-                }
-
-                return SQLITE_OK;
-            },
-            this);
+        if (__builtin_available(iOS 10.0, *)) {
+            sqlite3_trace_v2(
+                             (sqlite3 *) m_handle, flag,
+                             [](unsigned int flag, void *M, void *P, void *X) -> int {
+                                 Handle *handle = (Handle *) M;
+                                 sqlite3_stmt *stmt = (sqlite3_stmt *) P;
+                                 switch (flag) {
+                                     case SQLITE_TRACE_STMT: {
+                                         const char *sql = sqlite3_sql(stmt);
+                                         if (sql) {
+                                             handle->reportSQL(sql);
+                                         }
+                                     } break;
+                                     case SQLITE_TRACE_PROFILE: {
+                                         sqlite3_int64 *cost = (sqlite3_int64 *) X;
+                                         const char *sql = sqlite3_sql(stmt);
+                                         
+                                         //report last trace
+                                         if (!handle->shouldPerformanceAggregation()) {
+                                             handle->reportPerformance();
+                                         }
+                                         
+                                         if (sql) {
+                                             handle->addPerformanceTrace(sql, *cost);
+                                         }
+                                     } break;
+                                     default:
+                                         break;
+                                 }
+                                 
+                                 return SQLITE_OK;
+                             },
+                             this);
+        } else {
+            // Fallback on earlier versions
+        }
     } else {
-        sqlite3_trace_v2((sqlite3 *) m_handle, 0, nullptr, nullptr);
+        if (__builtin_available(iOS 10.0, *)) {
+            sqlite3_trace_v2((sqlite3 *) m_handle, 0, nullptr, nullptr);
+        } else {
+            // Fallback on earlier versions
+        }
     }
 }
 

@@ -32,7 +32,7 @@ LiteralValue::LiteralValue(const std::string &value)
 {
 }
 
-LiteralValue::LiteralValue(const std::nullptr_t &value) : Describable("NULL")
+LiteralValue::LiteralValue(const std::nullptr_t &/*value*/) : Describable("NULL")
 {
 }
 

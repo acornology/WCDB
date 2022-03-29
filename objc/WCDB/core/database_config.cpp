@@ -41,7 +41,7 @@ std::shared_ptr<SQLTrace> Database::s_globalSQLTrace = nullptr;
 const Configs Database::defaultConfigs(
     {{
          Database::defaultTraceConfigName,
-         [](std::shared_ptr<Handle> &handle, Error &error) -> bool {
+         [](std::shared_ptr<Handle> &handle, Error &/*error*/) -> bool {
              {
                  std::shared_ptr<PerformanceTrace> trace =
                      s_globalPerformanceTrace;
@@ -61,7 +61,7 @@ const Configs Database::defaultConfigs(
      },
      {
          Database::defaultCipherConfigName,
-         [](std::shared_ptr<Handle> &handle, Error &error) -> bool {
+         [](std::shared_ptr<Handle> &/*handle*/, Error &/*error*/) -> bool {
              //place holder
              return true;
          },
@@ -198,7 +198,7 @@ const Configs Database::defaultConfigs(
      },
      {
          Database::defaultCheckpointConfigName,
-         [](std::shared_ptr<Handle> &handle, Error &error) -> bool {
+         [](std::shared_ptr<Handle> &handle, Error &/*error*/) -> bool {
              handle->registerCommittedHook(
                  [](Handle *handle, int pages, void *) {
                      static TimedQueue<std::string> s_timedQueue(2);
@@ -251,7 +251,7 @@ void Database::setPerformanceTrace(const PerformanceTrace &trace)
 {
     m_pool->setConfig(
         Database::defaultTraceConfigName,
-        [trace](std::shared_ptr<Handle> &handle, Error &error) -> bool {
+        [trace](std::shared_ptr<Handle> &handle, Error &/*error*/) -> bool {
             handle->setPerformanceTrace(trace);
             return true;
         });

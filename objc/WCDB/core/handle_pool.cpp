@@ -91,8 +91,8 @@ void HandlePool::PurgeFreeHandlesInAllPool()
 }
 
 HandlePool::HandlePool(const std::string &thePath, const Configs &configs)
-    : path(thePath)
-    , tag(InvalidTag)
+    : tag(InvalidTag)
+    , path(thePath)
     , m_configs(configs)
     , m_handles(s_hardwareConcurrency)
     , m_aliveHandleCount(0)

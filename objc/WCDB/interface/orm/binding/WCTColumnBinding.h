@@ -34,9 +34,9 @@ public:
         typename std::enable_if<ColumnIsCppType<T>::value>::type * = nullptr)
         : columnName(cn)
         , accessor(new WCTRuntimeCppAccessor<T>(cls, pn))
-        , m_columnDef(cn, (WCDB::ColumnType) accessor->getColumnType())
-        , m_isAutoIncrement(false)
-        , m_isPrimary(false)
+    , m_isPrimary(false)
+    , m_isAutoIncrement(false)
+    , m_columnDef(cn, (WCDB::ColumnType) accessor->getColumnType())
     {
     }
 
@@ -49,9 +49,9 @@ public:
         typename std::enable_if<ColumnIsObjCType<T>::value>::type * = nullptr)
         : columnName(cn)
         , accessor(new WCTRuntimeObjCAccessor(cls, pn))
-        , m_columnDef(cn, (WCDB::ColumnType) accessor->getColumnType())
-        , m_isAutoIncrement(false)
-        , m_isPrimary(false)
+    , m_isPrimary(false)
+    , m_isAutoIncrement(false)
+    , m_columnDef(cn, (WCDB::ColumnType) accessor->getColumnType())
     {
     }
 

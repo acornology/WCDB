@@ -38,8 +38,8 @@ public:
     using Getter = PropertyType (^)(InstanceType);
 
     WCTRuntimeAccessor(Class cls, const std::string &propertyName)
-        : getProperty(GenerateGetter(cls, propertyName))
-        , setProperty(GenerateSetter(cls, propertyName))
+    : setProperty(GenerateSetter(cls, propertyName))
+    , getProperty(GenerateGetter(cls, propertyName))
     {
     }
 

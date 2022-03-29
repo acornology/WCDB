@@ -39,7 +39,7 @@ public:
     using Getter = CType (^)(InstanceType);
 
     WCTCppAccessor(Getter getter, Setter setter)
-        : getValue(getter), setValue(setter)
+    : setValue(setter), getValue(getter)
     {
     }
 
@@ -67,7 +67,7 @@ public:
     using Getter = CType (^)(InstanceType, SizeType);
 
     WCTCppAccessor(Getter getter, Setter setter)
-        : getValue(getter), setValue(setter)
+        : setValue(setter), getValue(getter)
     {
     }
 

@@ -40,7 +40,7 @@ public:
     using Getter = OCType (^)(InstanceType);
 
     WCTObjCAccessor(Getter getter, Setter setter)
-        : getObject(getter), setObject(setter)
+        : setObject(setter), getObject(getter)
     {
     }
 

@@ -30,6 +30,7 @@ template <typename PropertyType>
 class WCTRuntimeCppAccessor<
     PropertyType,
     typename std::enable_if<WCDB::ColumnInfo<PropertyType>::isBaseType>::type>
+    final
     : public WCTRuntimeAccessor<PropertyType>,
       public WCTCppAccessor<(
           WCTColumnType) WCDB::ColumnInfo<PropertyType>::type> {

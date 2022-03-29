@@ -31,7 +31,7 @@ const std::shared_ptr<WCTColumnBinding> &WCTPropertyBase::getColumnBinding() con
     return m_columnBinding;
 }
 
-const Class WCTPropertyBase::getBindingClass() const
+Class WCTPropertyBase::getBindingClass() const
 {
     return m_cls;
 }

@@ -30,7 +30,7 @@ RecyclableStatement::RecyclableStatement(
 }
 
 RecyclableStatement::RecyclableStatement()
-    : m_statementHandle(nullptr), m_handle({nullptr, nullptr})
+    : m_handle({nullptr, nullptr}), m_statementHandle(nullptr)
 {
 }
 

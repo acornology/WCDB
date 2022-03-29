@@ -26,7 +26,7 @@ public:
                     const std::shared_ptr<WCTColumnBinding> &columnBinding);
 
     const std::shared_ptr<WCTColumnBinding> &getColumnBinding() const;
-    const Class getBindingClass() const;
+    Class getBindingClass() const;
 
 protected:
     void setBinding(const WCTPropertyBase &other);
