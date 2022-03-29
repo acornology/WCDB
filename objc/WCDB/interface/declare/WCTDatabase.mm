@@ -39,7 +39,7 @@
                                 UIApplicationDidReceiveMemoryWarningNotification
                                         object:nil
                                          queue:nil
-                                    usingBlock:^(NSNotification *_Nonnull note) {
+                                    usingBlock:^(NSNotification *_Nonnull /*note*/) {
                                       dispatch_async(s_queue, ^{
                                         WCDB::Database::PurgeFreeHandlesInAllDatabases();
                                       });

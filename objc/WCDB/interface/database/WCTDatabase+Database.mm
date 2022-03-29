@@ -32,7 +32,7 @@
         _database = (WCDB::Database *) _core.get();
 #if TARGET_OS_IPHONE
         _database->setConfig("FileProtection",
-                             [path](std::shared_ptr<WCDB::Handle> &handle, WCDB::Error &error) -> bool {
+                             [path](std::shared_ptr<WCDB::Handle> &/*handle*/, WCDB::Error &/*error*/) -> bool {
                                  NSString *shm = [path stringByAppendingString:@"-shm"];
                                  NSFileManager *fm = [NSFileManager defaultManager];
                                  if ([fm fileExistsAtPath:shm]) {

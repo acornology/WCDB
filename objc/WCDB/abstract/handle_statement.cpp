@@ -24,7 +24,7 @@
 namespace WCDB {
 
 StatementHandle::StatementHandle(void *stmt, const Handle &handle)
-    : m_stmt(stmt), m_handle(handle)
+    : m_handle(handle), m_stmt(stmt)
 {
 }
 

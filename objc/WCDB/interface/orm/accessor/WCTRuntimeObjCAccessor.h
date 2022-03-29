@@ -23,7 +23,7 @@
 #import <WCDB/WCTRuntimeBaseAccessor.h>
 #import <objc/runtime.h>
 
-class WCTRuntimeObjCAccessor : public WCTRuntimeAccessor<id>,
+class WCTRuntimeObjCAccessor final : public WCTRuntimeAccessor<id>,
                                public WCTObjCAccessor {
 protected:
     using InstanceType = WCTObjCAccessor::InstanceType;

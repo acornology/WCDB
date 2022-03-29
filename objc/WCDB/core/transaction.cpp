@@ -28,8 +28,8 @@ Transaction::Transaction(const RecyclableHandlePool &pool,
                          const RecyclableHandle &handle)
     : CoreBase(pool, CoreType::Transaction)
     , m_handle(handle)
-    , m_mutex(new std::mutex)
     , m_isInTransaction(false)
+    , m_mutex(new std::mutex)
 {
 }
 

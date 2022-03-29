@@ -32,7 +32,7 @@ namespace WCDB {
 class StatementHandle;
 class Statement;
 
-class Transaction : public CoreBase {
+class Transaction final : public CoreBase {
 public:
     ~Transaction();
 
