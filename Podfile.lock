@@ -1,0 +1,29 @@
+PODS:
+  - DoraemonKit/Common (3.1.2)
+  - DoraemonKit/Hook (3.1.2):
+    - DoraemonKit/Common
+  - WCDB (1.0.8)
+
+DEPENDENCIES:
+  - "DoraemonKit/Hook (from `git@github.com:didi/DoraemonKit.git`, branch `master`)"
+  - WCDB (from `.`)
+
+EXTERNAL SOURCES:
+  DoraemonKit:
+    :branch: master
+    :git: "git@github.com:didi/DoraemonKit.git"
+  WCDB:
+    :path: "."
+
+CHECKOUT OPTIONS:
+  DoraemonKit:
+    :commit: 6e47a28b8253e6f71d7869a5a48ecc6e8542ab65
+    :git: "git@github.com:didi/DoraemonKit.git"
+
+SPEC CHECKSUMS:
+  DoraemonKit: aa228d6cc263888f68dab6bd14507657397474c1
+  WCDB: a09898d42fc0d0c83c8a414b8c0bbcd9a44bd2c3
+
+PODFILE CHECKSUM: 6ab6242804f6384732a2cd2f5fe6b580b1cbcca8
+
+COCOAPODS: 1.11.3
